@@ -1,0 +1,18 @@
+EurekaOrigin : http://localhost:8761
+
+Kafka:
+  server: localhost:29092
+
+Loki:
+  Host: localhost
+  Port: 3100
+
+Tempo:
+  host: localhost
+  zipkin_port: 9411
+  otlp_port: 4318
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG

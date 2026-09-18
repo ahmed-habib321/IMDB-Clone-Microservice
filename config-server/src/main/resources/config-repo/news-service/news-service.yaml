@@ -1,0 +1,5 @@
+server:
+  port: 0
+
+# database.* is resolved per profile in news-service-local.yaml /
+# news-service-Docker.yaml (see title-service for the same pattern).

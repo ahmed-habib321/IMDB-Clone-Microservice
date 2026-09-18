@@ -1,0 +1,12 @@
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.bento-card {
+  background-color: #1e2020;
+  border: 1px solid #4e4633;
+  transition: all 0.3s ease;
+}
+.bento-card:hover {
+  border-color: #ffe5a0;
+  transform: scale(1.01);
+}

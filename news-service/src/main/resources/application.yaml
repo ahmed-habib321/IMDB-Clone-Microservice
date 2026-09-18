@@ -1,0 +1,10 @@
+spring:
+  banner:
+    location: classpath:banner.txt
+  application:
+    version: 1.0.0
+    name: news-service
+  config:
+    import: optional:file:./profile.properties
+
+

@@ -1,0 +1,249 @@
+<main class="w-full max-w-container-max mx-auto">
+
+  @if (loading()) {
+    <div class="h-[60vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else if (title(); as t) {
+    <!-- Hero Backdrop -->
+    <section class="relative">
+      <div class="absolute inset-0">
+        <img class="w-full h-full object-cover" [src]="t.backdropUrl" [alt]="t.primaryTitle" />
+        <div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/60 to-transparent"></div>
+      </div>
+      <div class="relative z-10 max-w-container-max mx-auto px-gutter py-stack-lg">
+        <!-- Breadcrumb -->
+        <nav class="text-on-surface-variant font-label-caps text-label-caps mb-stack-md flex items-center gap-2">
+          <a routerLink="/" class="hover:text-primary">Home</a>
+          <span class="material-symbols-outlined text-base">chevron_right</span>
+          <span>{{ t.titleType }}</span>
+        </nav>
+
+        <div class="flex flex-col md:flex-row gap-stack-lg">
+          <!-- Poster -->
+          <div class="w-48 md:w-56 lg:w-64 flex-shrink-0 mx-auto md:mx-0">
+            <div class="aspect-[2/3] bg-surface-container rounded-xl overflow-hidden shadow-2xl border border-outline-variant/30">
+              <img class="w-full h-full object-cover" [src]="t.posterUrl" [alt]="t.primaryTitle" />
+            </div>
+          </div>
+
+          <!-- Header info -->
+          <div class="flex-1 min-w-0">
+            <h1 class="font-display-lg text-display-lg font-bold text-on-surface mb-stack-xs uppercase leading-tight">
+              {{ t.primaryTitle }}
+            </h1>
+            <p class="text-on-surface-variant font-body-md mb-stack-md italic">{{ t.tagline }}</p>
+
+            <div class="flex flex-wrap items-center gap-stack-md mb-stack-md">
+              <app-rating-badge [rating]="t.imdbRating"></app-rating-badge>
+              <span class="text-on-surface-variant font-label-caps text-label-caps">{{ t.voteCount.toLocaleString() }} votes</span>
+              <span class="flex items-center gap-1">
+                @for (g of t.genres; track g) {
+                  <app-genre-chip [genre]="g"></app-genre-chip>
+                }
+              </span>
+            </div>
+
+            <div class="flex flex-wrap gap-stack-md mb-stack-lg text-on-surface-variant font-body-sm">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">calendar_today</span> {{ t.releaseDate }}</span>
+              @if (runtime().length > 0) {
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span> {{ runtime() }}</span>
+              }
+              @if (t.status) {
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">flag</span> {{ t.status | titlecase }}</span>
+              }
+            </div>
+
+            <div class="flex flex-wrap gap-stack-md mb-stack-lg">
+              @if (isMovie()) {
+                <button
+                   class="bg-transparent border border-outline text-on-surface font-bold px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-white/10 transition-all uppercase font-label-caps tracking-widest">
+                  <span class="material-symbols-outlined">smart_display</span> Trailer
+                </button>
+              }
+            </div>
+
+            <!-- Budget/Revenue for movies -->
+            @if (boxOffice(); as bo) {
+              <div class="grid grid-cols-3 gap-stack-md max-w-md">
+                <div class="bg-surface-container-low rounded-lg p-stack-sm text-center">
+                  <p class="text-on-surface-variant font-label-caps text-label-caps">Budget</p>
+                  <p class="text-on-surface font-bold">${{ formatMoney(bo.budget) }}</p>
+                </div>
+                <div class="bg-surface-container-low rounded-lg p-stack-sm text-center">
+                  <p class="text-on-surface-variant font-label-caps text-label-caps">Domestic</p>
+                  <p class="text-on-surface font-bold">${{ formatMoney(bo.domestic) }}</p>
+                </div>
+                <div class="bg-surface-container-low rounded-lg p-stack-sm text-center">
+                  <p class="text-on-surface-variant font-label-caps text-label-caps">Worldwide</p>
+                  <p class="text-on-surface font-bold">${{ formatMoney(bo.worldwide) }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview -->
+    <section class="px-gutter py-stack-lg">
+      <div class="flex flex-wrap items-center justify-between gap-stack-md mb-stack-md">
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3">Overview</h2>
+        <div class="flex flex-wrap gap-stack-md">
+          <button
+             (click)="toggleWatchlist()"
+             class="bg-transparent border border-outline text-on-surface font-bold px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-white/10 transition-all uppercase font-label-caps tracking-widest">
+            <span class="material-symbols-outlined">{{ inWatchlist() ? 'check' : 'add' }}</span> {{ inWatchlist() ? 'In Watchlist' : 'Watchlist' }}
+          </button>
+          <button
+             (click)="addToList()"
+             class="bg-transparent border border-outline text-on-surface font-bold px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-white/10 transition-all uppercase font-label-caps tracking-widest">
+            <span class="material-symbols-outlined">playlist_add</span> Add to List
+          </button>
+        </div>
+      </div>
+      <p class="text-on-surface-variant text-body-md leading-relaxed max-w-3xl">{{ t.overview }}</p>
+    </section>
+
+    <!-- Top Cast -->
+    @if (cast().length > 0) {
+      <section class="px-gutter py-stack-md">
+        <div class="flex items-center justify-between mb-stack-md">
+          <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3">Top Cast</h2>
+          <span class="font-label-caps text-label-caps text-on-surface-variant">{{ cast().length }} cast members</span>
+        </div>
+        <div class="flex gap-stack-lg overflow-x-auto pb-stack-sm custom-scrollbar">
+          @for (c of cast(); track c.personId) {
+            <app-person-card [person]="{ id: c.personId, name: c.name, profileUrl: c.profileUrl }" [role]="c.characterName"></app-person-card>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Crew + Ratings Distribution Bento -->
+    <section class="px-gutter py-stack-md grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+      <!-- Crew -->
+      @if (crew().length > 0) {
+        <div class="bg-surface-container-low rounded-xl p-stack-md border border-outline-variant/20">
+          <h2 class="font-headline-md text-headline-md mb-stack-md">Crew</h2>
+          <div class="space-y-stack-sm">
+            @for (c of crew(); track c.personId + c.job) {
+              <div class="flex justify-between items-center">
+                <a [routerLink]="['/people', c.personId]" class="text-on-surface hover:text-primary transition-colors font-body-md">{{ c.name }}</a>
+                <span class="text-on-surface-variant font-label-caps text-label-caps">{{ c.job }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Ratings Distribution -->
+      @if (ratingDist(); as rd) {
+        <div class="lg:col-span-2 bg-surface-container-low rounded-xl p-stack-md border border-outline-variant/20">
+          <div class="flex items-center gap-stack-md mb-stack-md">
+            <span class="font-display-lg text-display-lg text-primary font-bold">{{ rd.averageRating.toFixed(1) }}</span>
+            <div>
+              <app-rating-badge [rating]="rd.averageRating"></app-rating-badge>
+              <p class="text-on-surface-variant font-label-caps text-label-caps">{{ rd.totalVotes.toLocaleString() }} votes</p>
+            </div>
+          </div>
+          <div class="space-y-1">
+            @for (d of rd.distribution; track d.score) {
+              <div class="flex items-center gap-stack-sm">
+                <span class="text-on-surface-variant font-label-caps text-label-caps w-8 text-right">{{ d.score }}</span>
+                <div class="flex-1 h-2 rounded-full bg-surface-container-highest overflow-hidden">
+                  <div class="h-full bg-primary rounded-full transition-all duration-500"
+                       [style.width.%]="maxCount(rd.distribution) > 0 ? (d.count / maxCount(rd.distribution)) * 100 : 0"></div>
+                </div>
+                <span class="text-on-surface-variant font-label-caps text-label-caps w-12 text-left">{{ d.count.toLocaleString() }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- Reviews -->
+    <section class="px-gutter py-stack-md">
+      <div class="flex items-center justify-between mb-stack-md">
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3">User Reviews</h2>
+        <a routerLink="/login" class="text-primary font-label-caps text-label-caps hover:underline">Write a review</a>
+      </div>
+      @if (reviews().length > 0) {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-stack-md">
+          @for (r of reviews(); track r.id) {
+            <app-review-card [review]="r" (helpful)="voteHelpful(r.id, $event)"></app-review-card>
+          }
+        </div>
+      } @else {
+        <div class="bg-surface-container-low rounded-xl p-stack-lg text-center text-on-surface-variant">
+          No reviews yet. Be the first to review this title!
+        </div>
+      }
+    </section>
+
+    <!-- Trivia / Quotes / Goofs -->
+    @if (trivia().length > 0 || quotes().length > 0 || goofs().length > 0) {
+      <section class="px-gutter py-stack-md">
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3 mb-stack-md">Trivia, Quotes & Goofs</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+          @if (trivia().length > 0) {
+            <div class="bg-surface-container-low rounded-xl p-stack-md border border-outline-variant/20">
+              <h3 class="font-bold text-on-surface mb-stack-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">lightbulb</span> Trivia
+              </h3>
+              <ul class="space-y-stack-sm">
+                @for (triv of trivia(); track triv.id) {
+                  <li class="text-body-sm text-on-surface-variant leading-relaxed">{{ triv.body }}</li>
+                }
+              </ul>
+            </div>
+          }
+          @if (quotes().length > 0) {
+            <div class="bg-surface-container-low rounded-xl p-stack-md border border-outline-variant/20">
+              <h3 class="font-bold text-on-surface mb-stack-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">format_quote</span> Quotes
+              </h3>
+              <ul class="space-y-stack-sm">
+                @for (q of quotes(); track q.id) {
+                  <li class="text-body-sm text-on-surface-variant leading-relaxed italic">
+                    "{{ q.text }}"
+                    @if (q.spokenBy) {
+                      <span class="not-italic text-on-surface font-bold"> – {{ q.spokenBy }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+          @if (goofs().length > 0) {
+            <div class="bg-surface-container-low rounded-xl p-stack-md border border-outline-variant/20">
+              <h3 class="font-bold text-on-surface mb-stack-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">report</span> Goofs
+              </h3>
+              <ul class="space-y-stack-sm">
+                @for (g of goofs(); track g.id) {
+                  <li class="text-body-sm text-on-surface-variant leading-relaxed">
+                    {{ g.body }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Similar Titles -->
+    @if (similar().length > 0) {
+      <section class="px-gutter py-stack-md">
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3 mb-stack-md">You May Also Like</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-stack-md">
+          @for (s of similar(); track s.id) {
+            <app-movie-card [title]="s"></app-movie-card>
+          }
+        </div>
+      </section>
+    }
+  }
+</main>

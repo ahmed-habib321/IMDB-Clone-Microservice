@@ -1,0 +1,56 @@
+<main class="w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+  @if (loading()) {
+    <div class="h-[50vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else if (list(); as l) {
+    <nav class="text-on-surface-variant font-label-caps text-label-caps mb-stack-md flex items-center gap-2">
+      <a routerLink="/" class="hover:text-primary">Home</a>
+      <span class="material-symbols-outlined text-base">chevron_right</span>
+      <a routerLink="/lists" class="hover:text-primary">Lists</a>
+      <span class="material-symbols-outlined text-base">chevron_right</span>
+      <span class="text-on-surface">{{ l.name }}</span>
+    </nav>
+
+    <div class="mb-stack-lg">
+      <div class="flex items-center gap-stack-md mb-stack-sm">
+        <h1 class="font-display-lg text-display-lg font-bold text-on-surface uppercase">{{ l.name }}</h1>
+        <span class="material-symbols-outlined text-on-surface-variant">{{ l.isPublic ? 'public' : 'lock' }}</span>
+      </div>
+      @if (l.description) {
+        <p class="text-on-surface-variant font-body-md max-w-2xl">{{ l.description }}</p>
+      }
+      <p class="text-on-surface-variant font-label-caps text-label-caps mt-stack-sm">{{ l.itemCount }} titles</p>
+    </div>
+
+    @if (l.items.length === 0) {
+      <div class="bg-surface-container-low rounded-xl p-stack-lg text-center py-stack-lg">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-stack-sm block">list_alt</span>
+        <p class="text-on-surface-variant">This list is empty.</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-stack-md">
+        @for (item of l.items; track item.id) {
+          <a [routerLink]="['/title', item.titleId]" class="group">
+            <div class="relative aspect-[2/3] bg-surface-container rounded-lg overflow-hidden mb-stack-sm border border-outline-variant/30 transition-transform duration-200 hover:scale-[1.02]">
+              <img class="w-full h-full object-cover" [src]="item.posterUrl" [alt]="item.primaryTitle" loading="lazy" />
+              <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="font-label-caps text-label-caps text-on-surface">{{ item.imdbRating.toFixed(1) }}</span>
+              </div>
+            </div>
+            <h3 class="font-bold text-on-surface group-hover:text-primary transition-colors truncate">{{ item.primaryTitle }}</h3>
+            @if (item.notes) {
+              <p class="text-on-surface-variant font-body-sm line-clamp-2">{{ item.notes }}</p>
+            }
+          </a>
+        }
+      </div>
+    }
+  } @else {
+    <div class="bg-surface-container-low rounded-xl p-stack-lg text-center">
+      <p class="text-on-surface-variant">List not found.</p>
+      <a routerLink="/lists" class="text-primary font-label-caps text-label-caps hover:underline mt-stack-sm inline-block">Back to lists</a>
+    </div>
+  }
+</main>

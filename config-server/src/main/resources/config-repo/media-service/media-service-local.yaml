@@ -1,0 +1,11 @@
+database:
+  host: localhost
+  name: media_db
+  port: 5438
+  username: admin
+  password: admin
+
+storage:
+  type: local
+  path: uploads
+  public-url: http://localhost:8080/media

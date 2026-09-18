@@ -1,0 +1,5 @@
+# database.* is resolved per profile in ratings-reviews-service-local.yaml /
+# ratings-reviews-service-Docker.yaml (see title-service for the same pattern).
+
+server:
+  port: 0

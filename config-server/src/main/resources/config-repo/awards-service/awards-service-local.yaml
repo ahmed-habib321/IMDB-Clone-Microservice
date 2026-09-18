@@ -1,0 +1,6 @@
+database:
+  host: localhost
+  name: awards_db
+  port: 5440
+  username: admin
+  password: admin

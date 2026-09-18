@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: api-gateway
+    version: 1.0.0
+  banner:
+    location: classpath:banner.txt
+
+  config:
+    import: optional:file:./profile.properties

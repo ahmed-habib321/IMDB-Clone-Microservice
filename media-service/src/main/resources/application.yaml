@@ -1,0 +1,8 @@
+spring:
+  banner:
+    location: classpath:banner.txt
+  application:
+    version: 1.0.0
+    name: media-service
+  config:
+    import: optional:file:./profile.properties

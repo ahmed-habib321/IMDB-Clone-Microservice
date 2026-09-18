@@ -1,0 +1,87 @@
+<main class="w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+  @if (loading()) {
+    <div class="h-[50vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else if (person(); as p) {
+    <nav class="text-on-surface-variant font-label-caps text-label-caps mb-stack-md flex items-center gap-2">
+      <a routerLink="/" class="hover:text-primary">Home</a>
+      <span class="material-symbols-outlined text-base">chevron_right</span>
+      <span>People</span>
+      <span class="material-symbols-outlined text-base">chevron_right</span>
+      <span class="text-on-surface">{{ p.name }}</span>
+    </nav>
+
+    <div class="flex flex-col md:flex-row gap-stack-lg mb-stack-lg">
+      <!-- Photo -->
+      <div class="w-40 md:w-52 mx-auto md:mx-0 flex-shrink-0">
+        <div class="aspect-[2/3] bg-surface-container rounded-xl overflow-hidden border border-outline-variant/30">
+          <img class="w-full h-full object-cover" [src]="p.profileUrl" [alt]="p.name" />
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+        <h1 class="font-display-lg text-display-lg font-bold text-on-surface mb-stack-sm uppercase">{{ p.name }}</h1>
+        <p class="text-on-surface-variant font-body-md mb-stack-md">{{ p.biography }}</p>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-stack-md max-w-lg">
+          <div class="bg-surface-container-low rounded-lg p-stack-sm">
+            <p class="text-on-surface-variant font-label-caps text-label-caps">Born</p>
+            <p class="text-on-surface font-bold">{{ p.birthDate | date: 'mediumDate' }}</p>
+          </div>
+          @if (p.birthPlace) {
+            <div class="bg-surface-container-low rounded-lg p-stack-sm">
+              <p class="text-on-surface-variant font-label-caps text-label-caps">Birth Place</p>
+              <p class="text-on-surface font-bold">{{ p.birthPlace }}</p>
+            </div>
+          }
+          <div class="bg-surface-container-low rounded-lg p-stack-sm">
+            <p class="text-on-surface-variant font-label-caps text-label-caps">Gender</p>
+            <p class="text-on-surface font-bold">{{ p.gender }}</p>
+          </div>
+          @if (p.deathDate) {
+            <div class="bg-surface-container-low rounded-lg p-stack-sm">
+              <p class="text-on-surface-variant font-label-caps text-label-caps">Died</p>
+              <p class="text-on-surface font-bold">{{ p.deathDate | date: 'mediumDate' }}</p>
+            </div>
+          }
+          @if (p.heightCm) {
+            <div class="bg-surface-container-low rounded-lg p-stack-sm">
+              <p class="text-on-surface-variant font-label-caps text-label-caps">Height</p>
+              <p class="text-on-surface font-bold">{{ p.heightCm }} cm</p>
+            </div>
+          }
+          @if (p.alsoKnownAs && p.alsoKnownAs.length > 0) {
+            <div class="bg-surface-container-low rounded-lg p-stack-sm">
+              <p class="text-on-surface-variant font-label-caps text-label-caps">Also Known As</p>
+              <p class="text-on-surface font-bold truncate">{{ p.alsoKnownAs.join(', ') }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Known For / Filmography -->
+    @if (p.filmography && p.filmography.length > 0) {
+      <section>
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3 mb-stack-md">
+          Known For
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-stack-md">
+          @for (f of p.filmography; track f.titleId) {
+            <div class="group">
+              <a [routerLink]="['/title', f.titleId]">
+                <div class="relative aspect-[2/3] bg-surface-container rounded-lg overflow-hidden mb-stack-sm border border-outline-variant/30 transition-transform duration-200 hover:scale-[1.02]">
+                  <img class="w-full h-full object-cover" [src]="f.posterUrl" [alt]="f.primaryTitle" loading="lazy" />
+                </div>
+                <h3 class="font-bold text-on-surface group-hover:text-primary transition-colors truncate">{{ f.primaryTitle }}</h3>
+                <p class="text-on-surface-variant font-label-caps text-label-caps">{{ f.job }}{{ f.characterName ? ' - ' + f.characterName : '' }}</p>
+              </a>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  }
+</main>

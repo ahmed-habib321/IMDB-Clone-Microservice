@@ -1,0 +1,20 @@
+spring:
+
+  kafka:
+    consumer:
+      group-id: search-service
+
+  elasticsearch:
+    uris: http://${ELASTICSEARCH_HOST:elasticsearch}:9200
+
+server:
+  port: 0
+
+# Title-service is reached through the gateway at :8080 during local dev.
+# Override per environment when services are addressed directly.
+service:
+  client:
+    title-service:
+      url: http://localhost:8080
+
+

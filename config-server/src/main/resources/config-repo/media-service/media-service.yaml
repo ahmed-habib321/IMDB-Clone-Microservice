@@ -1,0 +1,24 @@
+spring:
+
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 20MB
+
+# database.* is resolved per profile in media-service-local.yaml /
+# media-service-Docker.yaml (see title-service for the same pattern).
+
+server:
+  port: 0
+
+storage:
+  type: local
+  path: uploads
+  public-url: http://localhost:8080/media
+  s3:
+    endpoint: http://localhost:9000
+    bucket: media
+    public-url: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    region: us-east-1

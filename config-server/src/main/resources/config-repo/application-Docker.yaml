@@ -1,0 +1,18 @@
+EurekaOrigin : ${EUREKA_ORIGIN}
+
+Kafka:
+  server: ${KAFKA_SERVER}
+
+Loki:
+  Host: ${LOKI_HOST}
+  Port: ${LOKI_PORT}
+
+Tempo:
+  host: tempo
+  zipkin_port: 9411
+  otlp_port: 4318
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    org.springframework.cloud.loadbalancer: INFO

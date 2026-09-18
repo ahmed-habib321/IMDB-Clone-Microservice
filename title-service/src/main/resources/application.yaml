@@ -1,0 +1,17 @@
+spring:
+  banner:
+    location: classpath:banner.txt
+  application:
+    version: 1.0.0
+    name: title-service
+  config:
+    import: optional:file:./profile.properties
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: 1
+
+  cache:
+    type: redis

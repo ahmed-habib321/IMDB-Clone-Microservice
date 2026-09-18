@@ -1,0 +1,5 @@
+server:
+  port: 0
+
+# database.* is resolved per profile in contribution-service-local.yaml /
+# contribution-service-Docker.yaml (see title-service for the same pattern).

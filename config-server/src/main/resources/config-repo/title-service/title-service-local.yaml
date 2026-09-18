@@ -1,0 +1,6 @@
+database:
+  host: localhost
+  name: title_db
+  port: 5434
+  username: admin
+  password: admin

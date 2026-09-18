@@ -1,0 +1,96 @@
+<main class="w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+  <h1 class="font-display-lg text-display-lg font-bold text-on-surface mb-stack-lg uppercase">Explore Titles</h1>
+
+  <!-- Filters -->
+  <div class="bg-surface-container-low rounded-xl p-stack-md border border-outline-variant/20 mb-stack-lg space-y-stack-md">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-stack-md">
+      <!-- Search -->
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+        <input
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="applyFilters()"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary py-2 pl-10 pr-4 rounded-lg text-body-sm text-on-surface placeholder:text-on-surface-variant transition-all outline-none"
+          placeholder="Search titles..."
+          type="text"
+        />
+      </div>
+
+      <!-- Genre -->
+      <div>
+        <select
+          [(ngModel)]="selectedGenre"
+          (change)="applyFilters()"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary py-2 px-3 rounded-lg text-body-sm text-on-surface transition-all outline-none">
+          <option value="">All Genres</option>
+          @for (g of genres(); track g) {
+            <option [value]="g">{{ g }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Title type -->
+      <div>
+        <select
+          [(ngModel)]="titleType"
+          (change)="applyFilters()"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary py-2 px-3 rounded-lg text-body-sm text-on-surface transition-all outline-none">
+          <option value="ALL">All Types</option>
+          <option value="MOVIE">Movies</option>
+          <option value="TV_SERIES">TV Shows</option>
+          <option value="TV_MINI">TV Mini Series</option>
+          <option value="SHORT">Shorts</option>
+        </select>
+      </div>
+
+      <!-- Min rating -->
+      <div>
+        <select
+          [(ngModel)]="minRating"
+          (change)="applyFilters()"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary py-2 px-3 rounded-lg text-body-sm text-on-surface transition-all outline-none">
+          @for (r of ratingOptions; track r) {
+            <option [ngValue]="r">{{ r === 0 ? 'Any Rating' : r + '+ Rating' }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <button
+        (click)="resetFilters()"
+        class="text-primary font-label-caps text-label-caps hover:underline flex items-center gap-1">
+        <span class="material-symbols-outlined text-base">restart_alt</span> Reset Filters
+      </button>
+      <button
+        (click)="applyFilters()"
+        class="bg-primary text-on-primary font-bold px-6 py-2 rounded-lg font-label-caps text-label-caps hover:brightness-110 transition-all">
+        Apply Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  @if (loading()) {
+    <div class="h-[40vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else {
+    <div class="flex items-center justify-between mb-stack-md">
+      <h2 class="font-headline-md text-headline-md text-on-surface">{{ results().length }} titles found</h2>
+    </div>
+
+    @if (results().length > 0) {
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-stack-md">
+        @for (t of results(); track t.id) {
+          <app-movie-card [title]="t" [showType]="true"></app-movie-card>
+        }
+      </div>
+    } @else {
+      <div class="bg-surface-container-low rounded-xl p-stack-lg text-center py-stack-lg">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-stack-sm block">search_off</span>
+        <p class="text-on-surface-variant">No titles match your filters. Try adjusting them.</p>
+      </div>
+    }
+  }
+</main>

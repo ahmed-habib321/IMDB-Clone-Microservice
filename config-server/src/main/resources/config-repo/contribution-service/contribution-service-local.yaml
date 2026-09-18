@@ -1,0 +1,6 @@
+database:
+  host: localhost
+  name: contribution_db
+  port: 5441
+  username: admin
+  password: admin

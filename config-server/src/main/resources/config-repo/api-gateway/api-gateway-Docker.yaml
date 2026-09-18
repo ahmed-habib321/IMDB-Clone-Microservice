@@ -1,0 +1,37 @@
+database:
+  host: ${DATABASE_HOST}
+  name: ${DATABASE_NAME}
+  port: ${DATABASE_PORT}
+  username: ${DATABASE_USERNAME}
+  password: ${DATABASE_PASSWORD}
+
+
+mail:
+  host: ${MAIL_HOST}
+  port: ${MAIL_PORT}
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
+
+
+OAuth2:
+  Google:
+    Client-id: ${GOOGLE_CLIENT_ID}
+    Client-Secret: ${GOOGLE_CLIENT_SECRET}
+
+Redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiry-ms: ${ACCESS_TOKEN_EXPIRY_MS}
+  email-token-expiry-ms: ${EMAIL_TOKEN_EXPIRY_MS}
+  password-reset-expiry-ms: ${PASSWORD_RESET_EXPIRY_MS}
+  refresh-token-expiry-ms: ${REFRESH_TOKEN_EXPIRY_MS}
+  issuer: ${JWT_ISSUER}
+
+app:
+  base-url: ${APP_BASE_URL}
+
+  oauth2:
+    redirect-uri: ${OAUTH2_REDIRECT_URI}

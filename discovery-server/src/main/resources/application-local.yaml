@@ -1,0 +1,11 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+management:
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces

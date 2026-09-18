@@ -1,0 +1,15 @@
+<main class="w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+  <h1 class="font-display-lg text-display-lg font-bold text-on-surface uppercase mb-stack-lg">Latest News</h1>
+
+  @if (loading()) {
+    <div class="h-[50vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-md">
+      @for (a of articles(); track a.id) {
+        <app-article-card [article]="a"></app-article-card>
+      }
+    </div>
+  }
+</main>

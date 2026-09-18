@@ -1,0 +1,6 @@
+database:
+  host: localhost
+  name: ratings_reviews_db
+  port: 5436
+  username: admin
+  password: admin

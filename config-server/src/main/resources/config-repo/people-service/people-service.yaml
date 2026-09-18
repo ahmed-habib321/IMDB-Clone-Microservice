@@ -1,0 +1,14 @@
+# database.* is resolved per profile in people-service-local.yaml /
+# people-service-Docker.yaml (see title-service for the same pattern).
+
+server:
+  port: 0
+
+# Kafka broker is injected via KAFKA_SERVER (kafka:9092 in Docker,
+# localhost:29092 when running on the host).
+# Title-service is reached through the gateway at :8080 during local dev.
+# Override per environment when services are addressed directly.
+service:
+  client:
+    title-service:
+      url: http://localhost:8080

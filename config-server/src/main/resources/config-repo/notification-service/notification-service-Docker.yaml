@@ -1,0 +1,15 @@
+database:
+  host: ${DATABASE_HOST}
+  name: ${DATABASE_NAME}
+  port: ${DATABASE_PORT}
+  username: ${DATABASE_USERNAME}
+  password: ${DATABASE_PASSWORD}
+
+mail:
+  host: ${MAIL_HOST}
+  port: ${MAIL_PORT}
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
+
+email:
+  provider: MOCK

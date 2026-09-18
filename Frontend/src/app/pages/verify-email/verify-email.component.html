@@ -1,0 +1,91 @@
+<main class="flex-grow flex items-center justify-center py-stack-lg px-margin-mobile relative overflow-hidden">
+  <div class="relative z-10 w-full max-w-[480px] bg-surface-container border border-outline-variant rounded-xl p-stack-lg">
+    @if (status === 'pending' || status === 'success') {
+      <div class="text-center">
+        <div
+          class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-stack-md"
+          [class.bg-primary/10]="status === 'pending'"
+          [class.bg-emerald-500/15]="status === 'success'">
+          @if (status === 'pending') {
+            <span class="material-symbols-outlined text-primary text-4xl animate-pulse">mail</span>
+          } @else {
+            <span class="material-symbols-outlined text-emerald-400 text-4xl">verified</span>
+          }
+        </div>
+        <h1 class="font-display-lg text-display-lg text-primary mb-stack-xs">
+          {{ status === 'pending' ? 'Verify Your Email' : 'Email Verified!' }}
+        </h1>
+        <p class="text-on-surface-variant font-body-sm mb-stack-lg">
+          @if (status === 'pending') {
+            We've sent a 6-digit verification code to your email. Enter it below to verify your account and unlock all CINEPHILE features.
+          } @else {
+            Your email has been successfully verified. Welcome to the community!
+          }
+        </p>
+
+        @if (status === 'pending') {
+          <div class="mb-stack-md">
+            <label class="font-label-caps text-label-caps text-on-surface-variant px-1 mb-stack-xs block" for="otp">
+              Verification Code
+            </label>
+            <input
+              id="otp"
+              [(ngModel)]="otp"
+              maxlength="6"
+              inputmode="numeric"
+              class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-center text-headline-md tracking-[0.5em] placeholder:text-on-surface-variant transition-all outline-none"
+              placeholder="••••••"
+            />
+          </div>
+          @if (errorMessage) {
+            <p class="text-error text-body-sm mb-stack-md">{{ errorMessage }}</p>
+          }
+          <button
+            (click)="verify()"
+            [disabled]="isSubmitting"
+            class="w-full bg-primary text-on-primary font-bold py-3 rounded-lg uppercase tracking-wider hover:brightness-110 transition-all mb-stack-md flex items-center justify-center gap-2 disabled:opacity-70">
+            @if (isSubmitting) {
+              <span class="material-symbols-outlined animate-spin">progress_activity</span>
+            } @else {
+              Verify Email
+            }
+          </button>
+          <button
+            (click)="resendVerification()"
+            class="w-full bg-transparent border border-outline text-on-surface font-bold py-3 rounded-lg uppercase tracking-wider hover:bg-white/10 transition-all mb-stack-md">
+            Resend Code
+          </button>
+          @if (message) {
+            <p class="text-primary text-body-sm mb-stack-md">{{ message }}</p>
+          }
+          <button
+            (click)="goHome()"
+            class="w-full bg-transparent border border-outline text-on-surface font-bold py-3 rounded-lg uppercase tracking-wider hover:bg-white/10 transition-all">
+            Back to Home
+          </button>
+        } @else {
+          <button
+            (click)="goHome()"
+            class="w-full bg-primary text-on-primary font-bold py-3 rounded-lg uppercase tracking-wider hover:brightness-110 transition-all">
+            Continue to CINEPHILE
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-error/15 flex items-center justify-center mx-auto mb-stack-md">
+          <span class="material-symbols-outlined text-error text-4xl">error</span>
+        </div>
+        <h1 class="font-display-lg text-display-lg text-error mb-stack-xs">Verification Failed</h1>
+        <p class="text-on-surface-variant font-body-sm mb-stack-lg">
+          This verification link is invalid or has expired. Please request a new one.
+        </p>
+        <button
+          (click)="resendVerification()"
+          class="w-full bg-primary text-on-primary font-bold py-3 rounded-lg uppercase tracking-wider hover:brightness-110 transition-all">
+          Resend Verification Email
+        </button>
+      </div>
+    }
+  </div>
+</main>

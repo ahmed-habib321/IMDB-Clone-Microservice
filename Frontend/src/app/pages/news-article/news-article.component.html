@@ -1,0 +1,72 @@
+<main class="w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+  @if (loading()) {
+    <div class="h-[50vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else if (article(); as a) {
+    <nav class="text-on-surface-variant font-label-caps text-label-caps mb-stack-md flex items-center gap-2">
+      <a routerLink="/" class="hover:text-primary">Home</a>
+      <span class="material-symbols-outlined text-base">chevron_right</span>
+      <a routerLink="/news" class="hover:text-primary">News</a>
+    </nav>
+
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-center gap-stack-md mb-stack-md font-label-caps text-label-caps">
+        <span class="text-primary font-bold">{{ a.authorUsername }}</span>
+        <span class="text-on-surface-variant">{{ a.publishedAt | date: 'fullDate' }}</span>
+        <span class="text-on-surface-variant flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">visibility</span> {{ a.viewCount.toLocaleString() }}
+        </span>
+      </div>
+
+      <h1 class="font-display-lg text-display-lg font-bold text-on-surface leading-tight mb-stack-lg">{{ a.title }}</h1>
+
+      <div class="border-l-4 border-primary pl-4 space-y-stack-md mb-stack-lg">
+        @for (p of paragraphs(a.body); track $index) {
+          <p class="text-on-surface-variant font-body-md leading-relaxed">{{ p }}</p>
+        }
+      </div>
+
+      @if (a.taggedTitles.length > 0 || a.taggedPeople.length > 0) {
+        <div class="bg-surface-container-low rounded-xl p-stack-md border border-outline-variant/20 mb-stack-lg">
+          <h2 class="font-headline-md text-headline-md font-bold text-on-surface mb-stack-md">Related</h2>
+          @if (a.taggedTitles.length > 0) {
+            <p class="text-on-surface-variant font-label-caps text-label-caps mb-stack-sm">Titles</p>
+            <div class="flex flex-wrap gap-stack-sm mb-stack-md">
+              @for (t of a.taggedTitles; track t.titleId) {
+                <a [routerLink]="['/title', t.titleId]"
+                   class="bg-surface-container-high text-on-surface px-3 py-1.5 rounded-lg text-body-sm hover:text-primary transition-colors">
+                  {{ t.primaryTitle }}
+                </a>
+              }
+            </div>
+          }
+          @if (a.taggedPeople.length > 0) {
+            <p class="text-on-surface-variant font-label-caps text-label-caps mb-stack-sm">People</p>
+            <div class="flex flex-wrap gap-stack-sm">
+              @for (p of a.taggedPeople; track p.personId) {
+                <a [routerLink]="['/people', p.personId]"
+                   class="flex items-center gap-2 bg-surface-container-high text-on-surface px-3 py-1.5 rounded-lg text-body-sm hover:text-primary transition-colors">
+                  <span class="w-6 h-6 rounded-full bg-surface-container overflow-hidden inline-block">
+                    <img class="w-full h-full object-cover" [src]="p.profileUrl" [alt]="p.name" />
+                  </span>
+                  {{ p.name }}
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <a routerLink="/news"
+         class="inline-flex items-center gap-2 text-primary font-label-caps text-label-caps hover:underline">
+        <span class="material-symbols-outlined text-base">arrow_back</span> Back to all news
+      </a>
+    </div>
+  } @else {
+    <div class="bg-surface-container-low rounded-xl p-stack-lg text-center">
+      <p class="text-on-surface-variant">Article not found.</p>
+      <a routerLink="/news" class="text-primary font-label-caps text-label-caps hover:underline mt-stack-sm inline-block">Back to news</a>
+    </div>
+  }
+</main>

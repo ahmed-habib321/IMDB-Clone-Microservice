@@ -1,0 +1,15 @@
+database:
+  host: localhost
+  name: notification_db
+  port: 5444
+  username: admin
+  password: admin
+
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: noreply@imdbclone.com
+  password: changeme
+
+email:
+  provider: MOCK

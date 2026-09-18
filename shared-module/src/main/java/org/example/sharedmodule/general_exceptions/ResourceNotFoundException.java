@@ -1,0 +1,12 @@
+package org.example.sharedmodule.general_exceptions;
+
+public class ResourceNotFoundException extends RuntimeException {
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+
+    public ResourceNotFoundException(String resource, Object id) {
+        super(resource + " not found: " + id);
+    }
+}

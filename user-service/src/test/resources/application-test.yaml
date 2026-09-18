@@ -1,0 +1,21 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+
+  cloud:
+    config:
+      enabled: false
+  config:
+    import:
+
+  kafka:
+    bootstrap-servers: localhost:29092  # will be mocked via @MockBean
+
+eureka:
+  client:
+    enabled: false

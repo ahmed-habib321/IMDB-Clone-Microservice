@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: config-server
+    version: 1.0.0
+  banner:
+    location: classpath:banner.txt
+
+  profiles:
+    active: native
+
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+            - classpath:/config-repo/{application}/
+            - classpath:/config-repo/
+
+server:
+  port: 8888
+
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

@@ -1,0 +1,32 @@
+spring:
+  application:
+    name:  Discovery-Service
+    version: 1.0.0
+  banner:
+    location: classpath:banner.txt
+  config:
+    import: optional:file:./profile.properties
+
+server:
+  port: 8761
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+

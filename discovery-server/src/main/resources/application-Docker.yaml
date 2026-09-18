@@ -1,0 +1,11 @@
+spring:
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+
+management:
+  otlp:
+    tracing:
+      endpoint: http://tempo:4318/v1/traces

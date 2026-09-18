@@ -1,0 +1,46 @@
+<main class="w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+  @if (loading()) {
+    <div class="h-[50vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else {
+    <h1 class="font-headline-md text-headline-md font-bold text-on-surface mb-stack-sm">
+      Search Results for "{{ query() }}"
+    </h1>
+    <p class="text-on-surface-variant font-body-sm mb-stack-lg">
+      {{ titles().length + people().length }} results found
+    </p>
+
+    <!-- People results -->
+    @if (people().length > 0) {
+      <section class="mb-stack-lg">
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3 mb-stack-md">People</h2>
+        <div class="flex flex-wrap gap-stack-lg">
+          @for (p of people(); track p.id) {
+            <app-person-card [person]="{ id: p.id, name: p.name, profileUrl: p.profileUrl }"></app-person-card>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Title results -->
+    @if (titles().length > 0) {
+      <section>
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3 mb-stack-md">Titles</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-stack-md">
+          @for (t of titles(); track t.id) {
+            <app-movie-card [title]="t"></app-movie-card>
+          }
+        </div>
+      </section>
+    }
+
+    @if (titles().length === 0 && people().length === 0) {
+      <div class="bg-surface-container-low rounded-xl p-stack-lg text-center py-stack-lg">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-stack-sm block">search_off</span>
+        <p class="text-on-surface-variant">No results found for "{{ query() }}".</p>
+        <a routerLink="/explore" class="text-primary font-label-caps text-label-caps hover:underline mt-stack-sm inline-block">Browse all titles</a>
+      </div>
+    }
+  }
+</main>

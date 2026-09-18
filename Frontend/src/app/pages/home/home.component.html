@@ -1,0 +1,120 @@
+<main class="w-full max-w-container-max mx-auto px-gutter py-stack-lg space-y-stack-lg">
+
+  @if (loading()) {
+    <div class="h-[60vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else {
+    <!-- Hero: Featured Carousel -->
+    @if (heroTitle(); as hero) {
+      <section class="relative group">
+        <div class="relative aspect-[21/9] overflow-hidden rounded-xl bg-surface-container">
+          <div class="absolute inset-0 z-10 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+          <div class="absolute inset-0">
+            <img
+              class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+              [src]="hero.backdropUrl"
+              [alt]="hero.primaryTitle"
+            />
+          </div>
+          <div class="absolute bottom-0 left-0 z-20 p-stack-lg w-full md:w-2/3">
+            <div class="flex items-center gap-stack-sm mb-stack-xs">
+              <span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded-lg font-label-caps text-label-caps">PREMIERE</span>
+              <span class="text-on-surface-variant font-label-caps text-label-caps">{{ hero.genres.join(' / ') }}</span>
+            </div>
+            <h1 class="font-display-lg text-display-lg text-primary mb-stack-sm drop-shadow-lg">{{ hero.primaryTitle }}</h1>
+            <p class="text-on-surface-variant text-body-md line-clamp-2 max-w-xl mb-stack-md">{{ hero.overview }}</p>
+            <div class="flex items-center gap-stack-md mb-stack-md">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span class="font-headline-md text-headline-md text-on-surface font-bold">{{ hero.imdbRating.toFixed(1) }}</span>
+              </span>
+              <span class="text-on-surface-variant font-label-caps text-label-caps">{{ hero.releaseDate.substring(0, 4) }}</span>
+              <span class="text-on-surface-variant font-label-caps text-label-caps">{{ hero.titleType }}</span>
+            </div>
+          </div>
+        </div>
+
+        @if (featured().length > 1) {
+          <button (click)="prevSlide()"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 backdrop-blur text-white flex items-center justify-center hover:bg-black/60 transition-all">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button (click)="nextSlide()"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 backdrop-blur text-white flex items-center justify-center hover:bg-black/60 transition-all">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+          <div class="absolute bottom-4 right-4 z-30 flex gap-1.5">
+            @for (item of featured(); track item.id) {
+              <button (click)="activeSlide = $index"
+                      class="w-2 h-2 rounded-full transition-all"
+                      [class.bg-primary]="activeSlide === $index"
+                      [class.bg-white/40]="activeSlide !== $index">
+              </button>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    <!-- Trending Today -->
+    <section>
+      <app-section-header title="What to watch" icon="local_fire_department"></app-section-header>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-stack-md">
+        @for (t of trending(); track t.id) {
+          <app-movie-card [title]="t"></app-movie-card>
+        }
+      </div>
+    </section>
+
+    <!-- Box Office + Latest News Bento -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+      <!-- Top Box Office -->
+      <div class="lg:col-span-1 bg-surface-container-low p-stack-md rounded-xl border border-outline-variant/20">
+        <h2 class="font-headline-md text-headline-md mb-stack-md flex items-center gap-2 border-l-4 border-primary pl-3">
+          Top Box Office
+        </h2>
+        <div class="space-y-4">
+          @for (movie of boxOffice().slice(0, 5); track movie.id; let i = $index) {
+            <a [routerLink]="['/title', movie.id]"
+               class="flex items-center gap-stack-md group cursor-pointer hover:bg-surface-container p-2 rounded-lg transition-colors">
+              <span class="font-display-lg text-primary/50 text-[32px] w-8">{{ i + 1 }}</span>
+              <div class="w-12 aspect-[2/3] bg-surface-container rounded overflow-hidden flex-shrink-0">
+                <img class="w-full h-full object-cover" [src]="movie.posterUrl" [alt]="movie.primaryTitle" loading="lazy" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-on-surface group-hover:text-primary transition-colors truncate">{{ movie.primaryTitle }}</h4>
+                <p class="text-on-surface-variant text-body-sm">${{ formatMoney(movie.boxOffice.worldwide) }}</p>
+              </div>
+              <span class="material-symbols-outlined text-on-surface-variant">trending_up</span>
+            </a>
+          }
+        </div>
+        <a routerLink="/explore"
+           class="w-full mt-stack-md text-center py-3 text-primary font-label-caps text-label-caps hover:bg-primary/10 transition-colors border border-primary/20 rounded-lg block">
+          View Full List
+        </a>
+      </div>
+
+      <!-- Latest News -->
+      <div class="lg:col-span-2">
+        <app-section-header title="Latest News" subtitle="View all" link="/news"></app-section-header>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+          @for (a of news(); track a.id) {
+            <app-article-card [article]="a"></app-article-card>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- New Releases -->
+    <section>
+      <app-section-header title="New Releases" icon="new_releases"></app-section-header>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-stack-md">
+        @for (t of newReleases(); track t.id) {
+          <app-movie-card [title]="t" [showType]="true"></app-movie-card>
+        }
+      </div>
+    </section>
+  }
+</main>

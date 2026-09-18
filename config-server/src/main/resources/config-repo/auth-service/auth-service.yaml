@@ -1,0 +1,7 @@
+database:
+  name: auth_db
+  port: 5443
+
+server:
+  port: 0
+

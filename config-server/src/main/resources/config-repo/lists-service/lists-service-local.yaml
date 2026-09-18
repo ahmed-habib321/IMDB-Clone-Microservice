@@ -1,0 +1,6 @@
+database:
+  host: localhost
+  name: lists_db
+  port: 5437
+  username: admin
+  password: admin

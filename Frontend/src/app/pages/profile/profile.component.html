@@ -1,0 +1,106 @@
+<main class="w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+  @if (loading()) {
+    <div class="h-[50vh] flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary animate-spin text-4xl">progress_activity</span>
+    </div>
+  } @else if (profile(); as p) {
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row items-center md:items-start gap-stack-lg mb-stack-lg">
+      <div class="w-32 h-32 rounded-full bg-surface-container-high overflow-hidden border-2 border-primary/40 flex-shrink-0">
+        @if (p.profile.avatarUrl) {
+          <img class="w-full h-full object-cover" [src]="p.profile.avatarUrl" [alt]="p.user.username" />
+        } @else {
+          <div class="w-full h-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-5xl text-on-surface-variant">person</span>
+          </div>
+        }
+      </div>
+      <div class="text-center md:text-left flex-1 min-w-0">
+        <h1 class="font-display-lg text-display-lg font-bold text-on-surface mb-stack-xs">
+          {{ p.profile.displayName || p.user.username }}
+        </h1>
+        <p class="text-on-surface-variant font-body-sm mb-stack-sm">@{{ p.user.username }}</p>
+        @if (p.profile.bio) {
+          <p class="text-on-surface-variant font-body-md max-w-xl mb-stack-md">{{ p.profile.bio }}</p>
+        }
+        @if (p.profile.country) {
+          <p class="text-on-surface-variant font-label-caps text-label-caps flex items-center gap-1">
+            <span class="material-symbols-outlined text-base">location_on</span> {{ p.profile.country }}
+          </p>
+        }
+        <p class="text-on-surface-variant font-label-caps text-label-caps flex items-center gap-1 mt-1">
+          <span class="material-symbols-outlined text-base">event</span> Member since {{ p.profile.memberSince | date: 'mediumDate' }}
+        </p>
+      </div>
+      <a routerLink="/me"
+         class="bg-surface-container-high border border-outline-variant px-5 py-2 rounded-lg text-on-surface font-bold font-label-caps text-label-caps hover:border-primary transition-colors self-start">
+        My Profile
+      </a>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="grid grid-cols-3 gap-stack-md mb-stack-lg max-w-lg">
+      <div class="bg-surface-container-low rounded-xl p-stack-md text-center">
+        <p class="font-display-lg text-display-lg text-primary font-bold">{{ p.profile.totalRatings }}</p>
+        <p class="text-on-surface-variant font-label-caps text-label-caps">Ratings</p>
+      </div>
+      <div class="bg-surface-container-low rounded-xl p-stack-md text-center">
+        <p class="font-display-lg text-display-lg text-primary font-bold">{{ p.profile.totalReviews }}</p>
+        <p class="text-on-surface-variant font-label-caps text-label-caps">Reviews</p>
+      </div>
+      <div class="bg-surface-container-low rounded-xl p-stack-md text-center">
+        <p class="font-display-lg text-display-lg text-primary font-bold">{{ lists().length }}</p>
+        <p class="text-on-surface-variant font-label-caps text-label-caps">Lists</p>
+      </div>
+    </div>
+
+    <!-- Recent Ratings -->
+    @if (ratings().length > 0) {
+      <section class="mb-stack-lg">
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3 mb-stack-md">Recent Ratings</h2>
+        <div class="flex gap-stack-md overflow-x-auto pb-stack-sm custom-scrollbar">
+          @for (r of ratings().slice(0, 8); track r.titleId) {
+            <a [routerLink]="['/title', r.titleId]" class="flex-shrink-0 w-28 group">
+              <div class="relative aspect-[2/3] bg-surface-container rounded-lg overflow-hidden mb-stack-xs border border-outline-variant/30">
+                <img class="w-full h-full object-cover" [src]="r.posterUrl" [alt]="r.titleName" loading="lazy" />
+                <div class="absolute bottom-0 inset-x-0 bg-black/70 backdrop-blur px-1 py-0.5 flex items-center justify-center gap-1">
+                  <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+                  <span class="text-on-surface font-bold text-sm">{{ r.score }}</span>
+                </div>
+              </div>
+              <p class="text-on-surface group-hover:text-primary transition-colors text-center text-xs font-bold truncate">{{ r.titleName }}</p>
+            </a>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Reviews -->
+    @if (reviews().length > 0) {
+      <section class="mb-stack-lg">
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3 mb-stack-md">Reviews</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-stack-md">
+          @for (r of reviews(); track r.id) {
+            <app-review-card [review]="r"></app-review-card>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Public Lists -->
+    @if (lists().length > 0) {
+      <section>
+        <h2 class="font-headline-md text-headline-md flex items-center gap-2 border-l-4 border-primary pl-3 mb-stack-md">Lists</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-stack-md">
+          @for (l of lists(); track l.id) {
+            <a [routerLink]="['/lists', l.id]" class="bg-surface-container-low rounded-xl p-stack-md border border-outline-variant/20 hover:border-primary/50 transition-colors group">
+              <h3 class="font-headline-md text-headline-md font-bold text-on-surface group-hover:text-primary transition-colors mb-stack-xs">{{ l.name }}</h3>
+              <p class="text-on-surface-variant font-body-sm line-clamp-2 mb-stack-sm">{{ l.description }}</p>
+              <p class="text-on-surface-variant font-label-caps text-label-caps">{{ l.itemCount }} items</p>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  }
+</main>
