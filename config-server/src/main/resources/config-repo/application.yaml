@@ -65,18 +65,21 @@ logging:
     url: http://${Loki.Host}:${Loki.Port}/loki/api/v1/push
   level:
     io.micrometer.tracing: DEBUG
-    zipkin2: DEBUG
+    org.springframework.boot.opentelemetry: DEBUG
 
 management:
-  tracing:
-    enabled: true
-    sampling:
-      probability: 1.0
-    export:
-#      otlp:
-#        endpoint: http://${Tempo.host}:${Tempo.otlp_port}/v1/traces
-      zipkin:
-        endpoint: http://${Tempo.host}:${Tempo.zipkin_port}/api/v2/spans
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  opentelemetry:
+    tracing:
+      enabled: true
+      sampling:
+        probability: 1.0
+      export:
+        otlp:
+          endpoint: http://${Tempo.host}:${Tempo.otlp_port}/v1/traces
 
   endpoints:
     web:

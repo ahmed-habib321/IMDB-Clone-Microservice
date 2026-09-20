@@ -9,7 +9,6 @@ Loki:
 
 Tempo:
   host: tempo
-  zipkin_port: 9411
   otlp_port: 4318
 
 logging:

@@ -48,11 +48,6 @@ scrape_configs:
     static_configs:
       - targets: ['kafka-exporter:9308']
 
-  - job_name: 'redis-exporter'
-    scrape_interval: 15s
-    static_configs:
-      - targets: ['redis-exporter:9121']
-
   - job_name: 'telegraf'
     scrape_interval: 10s
     static_configs:

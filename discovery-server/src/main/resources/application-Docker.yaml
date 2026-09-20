@@ -6,6 +6,8 @@ spring:
       enabled: false
 
 management:
-  otlp:
+  opentelemetry:
     tracing:
-      endpoint: http://tempo:4318/v1/traces
+      export:
+        otlp:
+          endpoint: http://tempo:4318/v1/traces
