@@ -15,7 +15,7 @@
     <logger name="org.hibernate.SQL"                     level="DEBUG"/>
     <logger name="org.hibernate.type.descriptor.sql"     level="WARN"/>
 
-    <turboFilter class="org.ticketsouq.sharedmodule.logging.OutboxSqlTurboFilter"/>
+    <turboFilter class="org.example.sharedmodule.logging.OutboxSqlTurboFilter"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
