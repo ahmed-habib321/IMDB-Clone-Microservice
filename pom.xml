@@ -85,15 +85,9 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-opentelemetry</artifactId>-->
-<!--        </dependency>-->
-<!--        TODO find only the dependency that publish the trace to tempo all other things work -->
-<!--        info if you uncomment the zipkin dependency and used it's port in the general config you will get the traces-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-zipkin</artifactId>
+            <artifactId>spring-boot-starter-opentelemetry</artifactId>
         </dependency>
 
 

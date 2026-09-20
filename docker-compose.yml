@@ -13,7 +13,12 @@ services:
       - postgres_user_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d user_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   title-db:
     image: postgres
     container_name: title-db
@@ -27,7 +32,12 @@ services:
       - postgres_title_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d title_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   people-db:
     image: postgres
     container_name: people-db
@@ -41,7 +51,12 @@ services:
       - postgres_people_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d people_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   ratings-reviews-db:
     image: postgres
     container_name: ratings-reviews-db
@@ -55,7 +70,12 @@ services:
       - postgres_ratings_reviews_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d ratings_reviews_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   lists-db:
     image: postgres
     container_name: lists-db
@@ -69,7 +89,12 @@ services:
       - postgres_lists_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d lists_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   media-db:
     image: postgres
     container_name: media-db
@@ -83,7 +108,12 @@ services:
       - postgres_media_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d media_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   news-db:
     image: postgres
     container_name: news-db
@@ -97,7 +127,12 @@ services:
       - postgres_news_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d news_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   awards-db:
     image: postgres
     container_name: awards-db
@@ -111,14 +146,20 @@ services:
       - postgres_awards_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d awards_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   minio:
-    image: minio/minio
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_PROMETHEUS_AUTH_TYPE: public
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -126,7 +167,12 @@ services:
       - minio_data:/data
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   contribution-db:
     image: postgres
     container_name: contribution-db
@@ -140,7 +186,12 @@ services:
       - postgres_contribution_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d contribution_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   auth-db:
     image: postgres
     container_name: auth-db
@@ -154,7 +205,12 @@ services:
       - postgres_auth_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d auth_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   notification-db:
     image: postgres
     container_name: notification-db
@@ -168,6 +224,12 @@ services:
       - postgres_notification_data:/var/lib/postgresql
     networks:
       - IMDB-Clone-Microservice
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d notification_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
@@ -189,17 +251,22 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
-
     volumes:
       - kafka_data:/var/lib/kafka/data
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/bin/kafka-broker-api-versions --bootstrap-server localhost:9092 > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     ports:
       - "8086:8080"
     environment:
@@ -208,7 +275,12 @@ services:
       DYNAMIC_CONFIG_ENABLED: "true"
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   prometheus:
     image: prom/prometheus:v2.46.0
     container_name: prometheus
@@ -233,7 +305,6 @@ services:
       start_period: 20s
     networks:
       - IMDB-Clone-Microservice
-
   loki:
     image: grafana/loki:3.1.2
     container_name: loki
@@ -249,7 +320,6 @@ services:
       start_period: 20s
     networks:
       - IMDB-Clone-Microservice
-
   tempo:
     image: grafana/tempo:2.2.2
     container_name: tempo
@@ -260,9 +330,8 @@ services:
       - ./data/tempo:/tmp/tempo
     ports:
       - "3200:3200"
-      - "9411:9411"   # zipkin listen port
-#      - "4317:4317"   # OTLP gRPC
-#      - "4318:4318"   # OTLP HTTP — services send directly here
+      - "4317:4317"   # OTLP gRPC — services send traces directly here
+      - "4318:4318"   # OTLP HTTP — services send traces directly here
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3200/ready || exit 1"]
       interval: 30s
@@ -271,7 +340,6 @@ services:
       start_period: 20s
     networks:
       - IMDB-Clone-Microservice
-
   grafana:
     image: grafana/grafana:10.1.0
     container_name: grafana
@@ -305,7 +373,6 @@ services:
       start_period: 30s
     networks:
       - IMDB-Clone-Microservice
-
   elasticsearch:
     image: elasticsearch:9.2.3
     container_name: elasticsearch
@@ -329,7 +396,6 @@ services:
     restart: unless-stopped
     networks:
       - IMDB-Clone-Microservice
-
   kibana:
     image: kibana:9.2.3
     container_name: kibana
@@ -342,7 +408,12 @@ services:
         condition: service_healthy   # ← wait for ES to be actually ready
     networks:
       - IMDB-Clone-Microservice
-
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   redis:
     image: redis:7-alpine
     container_name: redis
@@ -359,13 +430,12 @@ services:
       retries: 5
     networks:
       - IMDB-Clone-Microservice
-
   kafka-exporter:
     image: danielqsj/kafka-exporter:v1.9.0
     container_name: kafka-exporter
     depends_on:
       kafka:
-        condition: service_started
+        condition: service_healthy
     command:
       - --kafka.server=kafka:9092
     ports:
@@ -379,31 +449,6 @@ services:
       start_period: 10s
     networks:
       - IMDB-Clone-Microservice
-
-  redis-exporter:
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM oliver006/redis_exporter:v1.88.0
-        COPY --from=busybox:1.36-musl /bin/busybox /bin/busybox
-    container_name: redis-exporter
-    depends_on:
-      redis:
-        condition: service_healthy
-    command:
-      - --redis.addr=redis://redis:6379
-    ports:
-      - "9121:9121"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "/bin/busybox", "wget", "-q", "--spider", "http://127.0.0.1:9121/metrics"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    networks:
-      - IMDB-Clone-Microservice
-
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.0
     container_name: cadvisor
@@ -427,7 +472,6 @@ services:
       start_period: 30s
     networks:
       - IMDB-Clone-Microservice
-
   pyroscope:
     build:
       context: .
@@ -445,7 +489,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-
   promtail:
     image: grafana/promtail:2.9.2
     container_name: promtail
@@ -465,7 +508,6 @@ services:
       start_period: 20s
     networks:
       - IMDB-Clone-Microservice
-
   telegraf:
     image: telegraf:1.30.3
     container_name: telegraf
@@ -511,463 +553,451 @@ services:
       timeout: 5s
       retries: 8
       start_period: 30s
-
-  config-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: config-server/target/*.jar
-    container_name: config-server
-    ports:
-      - "8888:8888"
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=config-server -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-      SPRING_PROFILES_ACTIVE: native,Docker
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8888/actuator/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 8
-      start_period: 30s
-
-  api-gateway:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: api-gateway/target/*.jar
-    container_name: api-gateway
-    ports:
-      - "8080:8080"
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=api-gateway -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: auth-db
-      DATABASE_NAME: auth_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-
-      MAIL_HOST: smtp.gmail.com
-      MAIL_PORT: 587
-      MAIL_USERNAME: your@email.com
-      MAIL_PASSWORD: your-password
-
-      GOOGLE_CLIENT_ID: xxxxx
-      GOOGLE_CLIENT_SECRET: xxxxx
-
-      JWT_SECRET: changeme-this-must-be-at-least-32-bytes-long-for-sha256
-
-      ACCESS_TOKEN_EXPIRY_MS: 300000
-      EMAIL_TOKEN_EXPIRY_MS: 300000
-      PASSWORD_RESET_EXPIRY_MS: 300000
-      REFRESH_TOKEN_EXPIRY_MS: 604800000
-      JWT_ISSUER: imdb-clone
-
-      APP_BASE_URL: http://localhost:8080
-      OAUTH2_REDIRECT_URI: http://localhost:3000/auth/callback
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      auth-db:
-        condition: service_started
-      kafka:
-        condition: service_started
-
-  user-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: user-service/target/*.jar
-    container_name: user-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=user-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: user-db
-      DATABASE_NAME: user_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      user-db:
-        condition: service_started
-      kafka:
-        condition: service_started
-
-  notification-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: notification-service/target/*.jar
-    container_name: notification-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=notification-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: notification-db
-      DATABASE_NAME: notification_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      MAIL_HOST: smtp.gmail.com
-      MAIL_PORT: 587
-      MAIL_USERNAME: your@email.com
-      MAIL_PASSWORD: your-password
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      notification-db:
-        condition: service_started
-      kafka:
-        condition: service_started
-
-  people-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: people-service/target/*.jar
-    container_name: people-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=people-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: people-db
-      DATABASE_NAME: people_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-
-      # people-service calls title-service through the gateway for filmography
-      SERVICE_CLIENT_TITLE_SERVICE_URL: http://api-gateway:8080
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      people-db:
-        condition: service_started
-      kafka:
-        condition: service_started
-      api-gateway:
-        condition: service_started
-
-  search-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: search-service/target/*.jar
-    container_name: search-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=search-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      ELASTICSEARCH_HOST: elasticsearch
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-
-      # search-service calls title-service through the gateway to (re)index titles
-      SERVICE_CLIENT_TITLE_SERVICE_URL: http://api-gateway:8080
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      elasticsearch:
-        condition: service_healthy
-      kafka:
-        condition: service_started
-      api-gateway:
-        condition: service_started
-
-  awards-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: awards-service/target/*.jar
-    container_name: awards-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=awards-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: awards-db
-      DATABASE_NAME: awards_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      awards-db:
-        condition: service_started
-      kafka:
-        condition: service_started
-
-  title-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: title-service/target/*.jar
-    container_name: title-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=title-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: title-db
-      DATABASE_NAME: title_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      title-db:
-        condition: service_started
-      redis:
-        condition: service_healthy
-      kafka:
-        condition: service_started
-
-  ratings-reviews-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: ratings-reviews-service/target/*.jar
-    container_name: ratings-reviews-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=ratings-reviews-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: ratings-reviews-db
-      DATABASE_NAME: ratings_reviews_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      ratings-reviews-db:
-        condition: service_started
-      kafka:
-        condition: service_started
-
-  news-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: news-service/target/*.jar
-    container_name: news-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=news-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: news-db
-      DATABASE_NAME: news_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      news-db:
-        condition: service_started
-      kafka:
-        condition: service_started
-
-  lists-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: lists-service/target/*.jar
-    container_name: lists-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=lists-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: lists-db
-      DATABASE_NAME: lists_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      lists-db:
-        condition: service_started
-      kafka:
-        condition: service_started
-
-  media-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: media-service/target/*.jar
-    container_name: media-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=media-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: media-db
-      DATABASE_NAME: media_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-
-      STORAGE_S3_ENDPOINT: http://minio:9000
-      STORAGE_S3_ACCESS_KEY: minioadmin
-      STORAGE_S3_SECRET_KEY: minioadmin
-      STORAGE_S3_PUBLIC_URL: http://localhost:9000
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      media-db:
-        condition: service_started
-      minio:
-        condition: service_started
-      kafka:
-        condition: service_started
-
-  contribution-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: contribution-service/target/*.jar
-    container_name: contribution-service
-    environment:
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=contribution-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
-      EUREKA_ORIGIN: http://discovery-server:8761
-
-      SPRING_PROFILES_ACTIVE: Docker
-      DATABASE_HOST: contribution-db
-      DATABASE_NAME: contribution_db
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: admin
-      DATABASE_PASSWORD: admin
-
-      LOKI_HOST: loki
-      LOKI_PORT: 3100
-
-      KAFKA_SERVER: kafka:9092
-    networks:
-      - IMDB-Clone-Microservice
-    depends_on:
-      config-server:
-        condition: service_healthy
-      contribution-db:
-        condition: service_started
-      kafka:
-        condition: service_started
+#  config-server:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: config-server/target/*.jar
+#    container_name: config-server
+#    ports:
+#      - "8888:8888"
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=config-server -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#      SPRING_PROFILES_ACTIVE: native,Docker
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      discovery-server:
+#        condition: service_healthy
+#    healthcheck:
+#      test: ["CMD", "wget", "-qO-", "http://localhost:8888/actuator/health"]
+#      interval: 15s
+#      timeout: 5s
+#      retries: 8
+#      start_period: 30s
+#  api-gateway:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: api-gateway/target/*.jar
+#    container_name: api-gateway
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=api-gateway -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: auth-db
+#      DATABASE_NAME: auth_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      REDIS_HOST: redis
+#      REDIS_PORT: 6379
+#
+#      MAIL_HOST: smtp.gmail.com
+#      MAIL_PORT: 587
+#      MAIL_USERNAME: your@email.com
+#      MAIL_PASSWORD: your-password
+#
+#      GOOGLE_CLIENT_ID: xxxxx
+#      GOOGLE_CLIENT_SECRET: xxxxx
+#
+#      JWT_SECRET: changeme-this-must-be-at-least-32-bytes-long-for-sha256
+#
+#      ACCESS_TOKEN_EXPIRY_MS: 300000
+#      EMAIL_TOKEN_EXPIRY_MS: 300000
+#      PASSWORD_RESET_EXPIRY_MS: 300000
+#      REFRESH_TOKEN_EXPIRY_MS: 604800000
+#      JWT_ISSUER: imdb-clone
+#
+#      APP_BASE_URL: http://localhost:8080
+#      OAUTH2_REDIRECT_URI: http://localhost:3000/auth/callback
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+#      auth-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#
+#  user-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: user-service/target/*.jar
+#    container_name: user-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=user-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: user-db
+#      DATABASE_NAME: user_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      user-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#  notification-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: notification-service/target/*.jar
+#    container_name: notification-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=notification-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: notification-db
+#      DATABASE_NAME: notification_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      MAIL_HOST: smtp.gmail.com
+#      MAIL_PORT: 587
+#      MAIL_USERNAME: your@email.com
+#      MAIL_PASSWORD: your-password
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      notification-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#  people-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: people-service/target/*.jar
+#    container_name: people-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=people-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: people-db
+#      DATABASE_NAME: people_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#
+#      # people-service calls title-service through the gateway for filmography
+#      SERVICE_CLIENT_TITLE_SERVICE_URL: http://api-gateway:8080
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      people-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#      api-gateway:
+#        condition: service_started
+#  search-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: search-service/target/*.jar
+#    container_name: search-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=search-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      ELASTICSEARCH_HOST: elasticsearch
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#
+#      # search-service calls title-service through the gateway to (re)index titles
+#      SERVICE_CLIENT_TITLE_SERVICE_URL: http://api-gateway:8080
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      elasticsearch:
+#        condition: service_healthy
+#      kafka:
+#        condition: service_started
+#      api-gateway:
+#        condition: service_started
+#  awards-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: awards-service/target/*.jar
+#    container_name: awards-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=awards-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: awards-db
+#      DATABASE_NAME: awards_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      awards-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#  title-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: title-service/target/*.jar
+#    container_name: title-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=title-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: title-db
+#      DATABASE_NAME: title_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      REDIS_HOST: redis
+#      REDIS_PORT: 6379
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      title-db:
+#        condition: service_started
+#      redis:
+#        condition: service_healthy
+#      kafka:
+#        condition: service_started
+#  ratings-reviews-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: ratings-reviews-service/target/*.jar
+#    container_name: ratings-reviews-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=ratings-reviews-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: ratings-reviews-db
+#      DATABASE_NAME: ratings_reviews_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      ratings-reviews-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#  news-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: news-service/target/*.jar
+#    container_name: news-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=news-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: news-db
+#      DATABASE_NAME: news_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      news-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#  lists-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: lists-service/target/*.jar
+#    container_name: lists-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=lists-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: lists-db
+#      DATABASE_NAME: lists_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      lists-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#  media-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: media-service/target/*.jar
+#    container_name: media-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=media-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: media-db
+#      DATABASE_NAME: media_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#
+#      STORAGE_S3_ENDPOINT: http://minio:9000
+#      STORAGE_S3_ACCESS_KEY: minioadmin
+#      STORAGE_S3_SECRET_KEY: minioadmin
+#      STORAGE_S3_PUBLIC_URL: http://localhost:9000
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      media-db:
+#        condition: service_started
+#      minio:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#  contribution-service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        JAR_FILE: contribution-service/target/*.jar
+#    container_name: contribution-service
+#    environment:
+#      JAVA_TOOL_OPTIONS: "-javaagent:/app/pyroscope.jar -Dpyroscope.application.name=contribution-service -Dpyroscope.server.address=http://pyroscope:4040 -Dpyroscope.profiler.event=itimer -Dpyroscope.format=jfp"
+#      EUREKA_ORIGIN: http://discovery-server:8761
+#
+#      SPRING_PROFILES_ACTIVE: Docker
+#      DATABASE_HOST: contribution-db
+#      DATABASE_NAME: contribution_db
+#      DATABASE_PORT: 5432
+#      DATABASE_USERNAME: admin
+#      DATABASE_PASSWORD: admin
+#
+#      LOKI_HOST: loki
+#      LOKI_PORT: 3100
+#
+#      KAFKA_SERVER: kafka:9092
+#    networks:
+#      - IMDB-Clone-Microservice
+#    depends_on:
+#      config-server:
+#        condition: service_healthy
+#      contribution-db:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
 
 
 volumes:

@@ -4,6 +4,9 @@
     <springProperty scope="context" name="lokiUrl" source="logging.loki.url" defaultValue="http://localhost:3100/loki/api/v1/push"/>
     <springProperty scope="context" name="lokiEnabled" source="logging.loki.enabled" defaultValue="true"/>
 
+    <!-- Suppress Hibernate SQL for the outbox table emitted via org.hibernate.SQL -->
+    <turboFilter class="org.example.sharedmodule.logging.OutboxSqlTurboFilter"/>
+
     <!-- ── Console ───────────────────────────────────────────────── -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

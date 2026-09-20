@@ -17,7 +17,7 @@ public interface UserMapper {
 
     default User createUser(UUID userId, String email, String username) {
         return User.builder()
-                .id(userId)
+                .id(userId != null ? userId : UUID.randomUUID())
                 .email(email)
                 .username(username)
                 .build();
