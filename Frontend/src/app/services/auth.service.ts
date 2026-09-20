@@ -129,6 +129,19 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  hasRole(...roles: string[]): boolean {
+    const user = this.currentUser();
+    return !!user && roles.some((role) => user.roles.includes(role));
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('ADMIN');
+  }
+
+  isEditor(): boolean {
+    return this.hasRole('EDITOR');
+  }
+
   getRefreshToken(): string | null {
     return localStorage.getItem(this.REFRESH_KEY);
   }

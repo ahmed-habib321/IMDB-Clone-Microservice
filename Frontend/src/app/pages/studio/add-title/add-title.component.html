@@ -1,0 +1,222 @@
+<main class="flex-grow px-gutter py-stack-lg max-w-container-max mx-auto w-full">
+  <header class="mb-stack-lg">
+    <a routerLink="/studio" class="font-label-caps text-label-caps text-primary hover:underline">&larr; Back to Studio</a>
+    <h1 class="font-display-lg text-display-lg text-primary uppercase tracking-tighter mt-stack-sm">Add Title</h1>
+    <p class="font-body-md text-on-surface-variant">Create a new Movie or TV Show in the catalog.</p>
+  </header>
+
+  <div class="flex gap-stack-sm mb-stack-lg" role="tablist" aria-label="Title type">
+    <button
+      type="button"
+      (click)="switchKind('movie')"
+      role="tab"
+      [attr.aria-selected]="kind() === 'movie'"
+      class="px-stack-md py-stack-sm rounded-lg border font-label-caps text-label-caps transition-all"
+      [class]="kind() === 'movie'
+        ? 'bg-primary text-on-primary border-primary'
+        : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'"
+    >
+      Movie
+    </button>
+    <button
+      type="button"
+      (click)="switchKind('show')"
+      role="tab"
+      [attr.aria-selected]="kind() === 'show'"
+      class="px-stack-md py-stack-sm rounded-lg border font-label-caps text-label-caps transition-all"
+      [class]="kind() === 'show'
+        ? 'bg-primary text-on-primary border-primary'
+        : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'"
+    >
+      TV Show
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-surface-container p-stack-lg rounded-xl border border-outline-variant/30 space-y-stack-md">
+    @if (errorMessage) {
+      <div class="bg-error-container/20 border border-error/30 text-on-error-container rounded-lg px-stack-md py-stack-sm text-body-sm">
+        {{ errorMessage }}
+      </div>
+    }
+    @if (successMessage) {
+      <div class="bg-primary-container/20 border border-primary/30 text-on-primary-container rounded-lg px-stack-md py-stack-sm text-body-sm">
+        {{ successMessage }}
+      </div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="primaryTitle">Primary Title *</label>
+        <input id="primaryTitle" formControlName="primaryTitle" type="text"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="Inception" />
+        @if (form.get('primaryTitle')?.touched && form.get('primaryTitle')?.hasError('required')) {
+          <span class="text-error text-body-sm block">Primary title is required</span>
+        }
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="originalTitle">Original Title</label>
+        <input id="originalTitle" formControlName="originalTitle" type="text"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="Inception" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="tagline">Tagline</label>
+        <input id="tagline" formControlName="tagline" type="text"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="Your mind is the scene of the crime" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="status">Status</label>
+        <select id="status" formControlName="status"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none">
+          @for (s of statuses; track s) {
+            <option [value]="s">{{ s }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="titleType">Type</label>
+        <select id="titleType" formControlName="titleType"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none">
+          @for (t of (kind() === 'movie' ? movieTypes : showTypes); track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="releaseDate">Release Date</label>
+        <input id="releaseDate" formControlName="releaseDate" type="date"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="runtimeMins">Runtime (minutes)</label>
+        <input id="runtimeMins" formControlName="runtimeMins" type="number" min="0"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="148" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="budget">Budget (USD)</label>
+        <input id="budget" formControlName="budget" type="number" min="0"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="160000000" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="revenue">Revenue (USD)</label>
+        <input id="revenue" formControlName="revenue" type="number" min="0"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="836000000" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="posterUrl">Poster URL</label>
+        <input id="posterUrl" formControlName="posterUrl" type="url"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="https://..." />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="backdropUrl">Backdrop URL</label>
+        <input id="backdropUrl" formControlName="backdropUrl" type="url"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="https://..." />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="genres">Genres (comma separated)</label>
+        <input id="genres" formControlName="genres" type="text"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="Sci-Fi, Thriller" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="languages">Languages (comma separated)</label>
+        <input id="languages" formControlName="languages" type="text"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="English, Japanese" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="countries">Countries (comma separated)</label>
+        <input id="countries" formControlName="countries" type="text"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="USA, UK" />
+      </div>
+
+      <div class="space-y-1 md:col-span-2">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="overview">Overview</label>
+        <textarea id="overview" formControlName="overview" rows="4"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none resize-y"
+          placeholder="A thief who steals corporate secrets..." ></textarea>
+      </div>
+
+      <label class="flex items-center gap-stack-sm font-body-sm text-on-surface cursor-pointer">
+        <input formControlName="adult" type="checkbox" class="w-4 h-4 accent-[color:var(--color-primary)]" />
+        Adult content
+      </label>
+    </div>
+
+    @if (kind() === 'show') {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md pt-stack-sm border-t border-outline-variant/30">
+        <div class="space-y-1">
+          <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="network">Network</label>
+          <input id="network" formControlName="network" type="text"
+            class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+            placeholder="Netflix" />
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="totalSeasons">Total Seasons</label>
+          <input id="totalSeasons" formControlName="totalSeasons" type="number" min="0"
+            class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none" />
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="totalEpisodes">Total Episodes</label>
+          <input id="totalEpisodes" formControlName="totalEpisodes" type="number" min="0"
+            class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none" />
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="episodeRuntime">Episode Runtime (minutes)</label>
+          <input id="episodeRuntime" formControlName="episodeRuntime" type="number" min="0"
+            class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none" />
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="finishedAt">Finished At</label>
+          <input id="finishedAt" formControlName="finishedAt" type="date"
+            class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none" />
+        </div>
+
+        <label class="flex items-center gap-stack-sm font-body-sm text-on-surface cursor-pointer">
+          <input formControlName="isOnGoing" type="checkbox" class="w-4 h-4 accent-[color:var(--color-primary)]" />
+          Currently on-going
+        </label>
+      </div>
+    }
+
+    <div class="pt-stack-sm">
+      <button
+        type="submit"
+        [disabled]="isSubmitting"
+        class="bg-primary hover:bg-primary-container text-on-primary font-bold py-4 px-8 rounded-lg uppercase tracking-widest transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70"
+      >
+        @if (isSubmitting) {
+          <span class="material-symbols-outlined animate-spin">progress_activity</span>
+        } @else {
+          <span class="material-symbols-outlined">add</span>
+          Create {{ kind() === 'movie' ? 'Movie' : 'TV Show' }}
+        }
+      </button>
+    </div>
+  </form>
+</main>

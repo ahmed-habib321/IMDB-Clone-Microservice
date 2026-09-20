@@ -6,6 +6,14 @@ import { NewsArticle } from '../models/news.model';
 import { Page } from '../models/common.model';
 import { environment } from '../../environments/environment';
 
+export interface CreateNewsRequest {
+  title: string;
+  body: string;
+  authorUsername: string;
+  taggedTitleIds?: string[];
+  taggedPersonIds?: string[];
+}
+
 interface NewsCardResponse {
   id: string;
   title: string;
@@ -74,5 +82,9 @@ export class NewsService {
       })),
       catchError(() => of(null)),
     );
+  }
+
+  createNews(req: CreateNewsRequest): Observable<NewsCardResponse> {
+    return this.http.post<NewsCardResponse>(`${this.API_URL}/news`, req);
   }
 }

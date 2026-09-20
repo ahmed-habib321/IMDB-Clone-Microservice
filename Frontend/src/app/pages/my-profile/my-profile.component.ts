@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
+import { AdminService } from '../../services/admin.service';
 import { UserProfileResponse } from '../../models/user.model';
 
 @Component({
@@ -14,12 +15,17 @@ import { UserProfileResponse } from '../../models/user.model';
 })
 export class MyProfileComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly auth = inject(AuthService);
+  protected readonly auth = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly adminService = inject(AdminService);
 
   readonly profile = signal<UserProfileResponse | null>(null);
   readonly loading = signal(true);
   readonly editing = signal(false);
+  readonly editorRequestBusy = signal(false);
+  readonly editorRequestPending = signal(false);
+  editorRequestMessage = '';
+  editorRequestError = '';
   savedMessage = '';
   saveError = '';
 
@@ -76,6 +82,27 @@ export class MyProfileComponent implements OnInit {
       },
       error: () => {
         this.saveError = 'Failed to save profile. Please try again.';
+      },
+    });
+  }
+
+  requestEditorRole(): void {
+    if (this.editorRequestBusy()) return;
+    this.editorRequestBusy.set(true);
+    this.editorRequestMessage = '';
+    this.editorRequestError = '';
+
+    this.adminService.requestEditorRole().subscribe({
+      next: () => {
+        this.editorRequestPending.set(true);
+        this.editorRequestMessage =
+          'Request submitted! An admin will review your request and you will be notified.';
+        this.editorRequestBusy.set(false);
+      },
+      error: (err) => {
+        const body = (err as { error?: { message?: string } }).error;
+        this.editorRequestError = body?.message ?? 'Failed to submit the request. Please try again.';
+        this.editorRequestBusy.set(false);
       },
     });
   }

@@ -23,6 +23,12 @@
            class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-headline-md text-headline-md">
           Watchlist
         </a>
+        @if (auth.isAuthenticated() && (auth.isEditor() || auth.isAdmin())) {
+          <a routerLink="/studio"
+             class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-headline-md text-headline-md">
+            Studio
+          </a>
+        }
       </div>
     </div>
 
@@ -114,6 +120,9 @@
       <a routerLink="/news" (click)="mobileMenuOpen = false" class="block py-2 font-headline-md text-headline-md text-on-surface hover:text-primary">News</a>
       <a routerLink="/awards" (click)="mobileMenuOpen = false" class="block py-2 font-headline-md text-headline-md text-on-surface hover:text-primary">Awards</a>
       <a routerLink="/watchlist" (click)="mobileMenuOpen = false" class="block py-2 font-headline-md text-headline-md text-on-surface hover:text-primary">Watchlist</a>
+      @if (auth.isAuthenticated() && (auth.isEditor() || auth.isAdmin())) {
+        <a routerLink="/studio" (click)="mobileMenuOpen = false" class="block py-2 font-headline-md text-headline-md text-on-surface hover:text-primary">Studio</a>
+      }
 
       <div class="border-t border-outline-variant/30 pt-stack-sm space-y-stack-sm">
         @if (auth.isAuthenticated()) {

@@ -28,7 +28,7 @@ export class ForgotPasswordComponent {
   resetForm = this.fb.group(
     {
       otp: ['', [Validators.required, Validators.minLength(6)]],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]],
     },
     { validators: [ForgotPasswordComponent.passwordMatchValidator] },

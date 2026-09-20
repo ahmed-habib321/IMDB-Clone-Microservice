@@ -37,6 +37,7 @@ export class VerifyEmailComponent implements OnInit {
   }
 
   async verify(): Promise<void> {
+    if (this.isSubmitting) return;
     if (this.otp.length < 6) {
       this.errorMessage = 'Please enter the 6-digit code from your email.';
       return;
@@ -51,8 +52,14 @@ export class VerifyEmailComponent implements OnInit {
         localStorage.setItem('cinephile_user', JSON.stringify({ ...user, isVerified: true }));
       }
       this.status = 'success';
-    } catch {
-      this.status = 'error';
+      setTimeout(() => {
+        this.router.navigate(['/']);
+      }, 1500);
+    } catch (err) {
+      const body = (err as { error?: { message?: string } }).error;
+      this.errorMessage =
+        body?.message ?? 'Verification failed. The code may be invalid or expired.';
+      this.status = 'pending';
     } finally {
       this.isSubmitting = false;
     }

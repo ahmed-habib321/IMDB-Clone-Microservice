@@ -1,0 +1,25 @@
+<main class="flex-grow px-gutter py-stack-lg max-w-container-max mx-auto w-full flex flex-col min-h-[calc(100vh-8rem)]">
+  <header class="mb-stack-sm flex flex-wrap items-center justify-between gap-stack-sm">
+    <div>
+      <a routerLink="/studio" class="font-label-caps text-label-caps text-primary hover:underline">&larr; Back to Studio</a>
+      <h1 class="font-display-lg text-display-lg text-primary uppercase tracking-tighter mt-stack-sm">Monitoring</h1>
+      <p class="font-body-md text-on-surface-variant">Grafana dashboards for the whole platform.</p>
+    </div>
+    <button
+      (click)="openInNewTab()"
+      class="inline-flex items-center gap-2 border border-outline-variant hover:border-primary text-on-surface font-bold px-4 py-2 rounded-lg text-label-caps hover:text-primary transition-all"
+    >
+      <span class="material-symbols-outlined text-sm">open_in_new</span>
+      Open in new tab
+    </button>
+  </header>
+
+  <div class="flex-1 bg-surface-container rounded-xl border border-outline-variant/30 overflow-hidden min-h-[70vh]">
+    <iframe
+      [src]="safeIframeSrc"
+      title="Grafana Dashboards"
+      class="w-full h-full min-h-[70vh]"
+      allow="fullscreen"
+    ></iframe>
+  </div>
+</main>

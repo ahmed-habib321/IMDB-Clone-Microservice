@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -90,6 +91,38 @@ export const routes: Routes = [
     path: 'explore',
     loadComponent: () =>
       import('./pages/explore/explore.component').then((m) => m.ExploreComponent),
+  },
+  {
+    path: 'studio',
+    loadComponent: () =>
+      import('./pages/studio/studio.component').then((m) => m.StudioComponent),
+    canActivate: [authGuard, roleGuard('ADMIN', 'EDITOR')],
+  },
+  {
+    path: 'studio/titles/new',
+    loadComponent: () =>
+      import('./pages/studio/add-title/add-title.component').then((m) => m.AddTitleComponent),
+    canActivate: [authGuard, roleGuard('ADMIN', 'EDITOR')],
+  },
+  {
+    path: 'studio/news/new',
+    loadComponent: () =>
+      import('./pages/studio/add-news/add-news.component').then((m) => m.AddNewsComponent),
+    canActivate: [authGuard, roleGuard('ADMIN', 'EDITOR')],
+  },
+  {
+    path: 'admin/editor-requests',
+    loadComponent: () =>
+      import('./pages/admin/editor-requests/editor-requests.component').then(
+        (m) => m.EditorRequestsComponent,
+      ),
+    canActivate: [authGuard, roleGuard('ADMIN')],
+  },
+  {
+    path: 'admin/monitoring',
+    loadComponent: () =>
+      import('./pages/admin/monitoring/monitoring.component').then((m) => m.MonitoringComponent),
+    canActivate: [authGuard, roleGuard('ADMIN')],
   },
   {
     path: '**',

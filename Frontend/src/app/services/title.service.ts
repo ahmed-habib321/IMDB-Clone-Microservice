@@ -24,6 +24,38 @@ export interface TitleMiniResponse {
   imdbRating: number;
 }
 
+export interface CreateTitleBaseRequest {
+  primaryTitle: string;
+  originalTitle?: string;
+  tagline?: string;
+  overview?: string;
+  posterUrl?: string;
+  backdropUrl?: string;
+  status?: string;
+  runtimeMins?: number;
+  budget?: number;
+  revenue?: number;
+  adult?: boolean;
+  releaseDate?: string;
+  genres?: string[];
+  languages?: string[];
+  countries?: string[];
+  titleType?: string;
+}
+
+export interface CreateMovieRequest extends CreateTitleBaseRequest {}
+
+export interface CreateTvShowRequest extends CreateTitleBaseRequest {
+  network?: string;
+  creatorId?: string;
+  totalSeasons?: number;
+  totalEpisodes?: number;
+  episodeRuntime?: number;
+  isOnGoing?: boolean;
+  seasons?: unknown[];
+  finishedAt?: string;
+}
+
 interface BoxOfficeResponse {
   titleId?: string;
   id?: string;
@@ -337,5 +369,13 @@ export class TitleService {
       releaseDate: s.releaseDate ?? '',
       seasons: s.seasons ?? [],
     };
+  }
+
+  createMovie(req: CreateMovieRequest): Observable<void> {
+    return this.http.post<void>(`${this.API_URL}/title/movie`, req);
+  }
+
+  createShow(req: CreateTvShowRequest): Observable<void> {
+    return this.http.post<void>(`${this.API_URL}/title/show`, req);
   }
 }

@@ -1,0 +1,38 @@
+<main class="flex-grow px-gutter py-stack-lg max-w-container-max mx-auto w-full">
+  <header class="mb-stack-lg">
+    <h1 class="font-display-lg text-display-lg text-primary uppercase tracking-tighter">Studio</h1>
+    <p class="font-body-md text-on-surface-variant">
+      Welcome back, {{ auth.currentUser()?.username }}. What would you like to work on?
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+    @for (card of cards; track card.link) {
+      @if (!card.adminOnly || auth.isAdmin()) {
+        <a
+          routerLink="{{ card.link }}"
+          class="bg-surface-container p-stack-lg rounded-xl border border-outline-variant/30 hover:border-primary/50 hover:shadow-xl transition-all group"
+        >
+          <div class="flex items-start gap-stack-md">
+            <span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">
+              {{ card.icon }}
+            </span>
+            <div>
+              <h2 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">
+                {{ card.title }}
+              </h2>
+              <p class="font-body-sm text-on-surface-variant mt-1">{{ card.description }}</p>
+            </div>
+          </div>
+        </a>
+      }
+    }
+  </div>
+
+  @if (auth.isAuthenticated() && !auth.isEditor() && !auth.isAdmin()) {
+    <p class="mt-stack-lg font-body-sm text-on-surface-variant">
+      Want to contribute? You can request the editor role from your
+      <a routerLink="/me" class="text-primary font-bold hover:underline">profile page</a>.
+    </p>
+  }
+</main>

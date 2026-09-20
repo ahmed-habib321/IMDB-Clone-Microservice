@@ -1,0 +1,94 @@
+<main class="flex-grow px-gutter py-stack-lg max-w-container-max mx-auto w-full">
+  <header class="mb-stack-lg">
+    <a routerLink="/studio" class="font-label-caps text-label-caps text-primary hover:underline">&larr; Back to Studio</a>
+    <h1 class="font-display-lg text-display-lg text-primary uppercase tracking-tighter mt-stack-sm">Write News</h1>
+    <p class="font-body-md text-on-surface-variant">Publish a new news article for the community.</p>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-surface-container p-stack-lg rounded-xl border border-outline-variant/30 space-y-stack-md">
+    @if (errorMessage) {
+      <div class="bg-error-container/20 border border-error/30 text-on-error-container rounded-lg px-stack-md py-stack-sm text-body-sm">
+        {{ errorMessage }}
+      </div>
+    }
+    @if (successMessage) {
+      <div class="bg-primary-container/20 border border-primary/30 text-on-primary-container rounded-lg px-stack-md py-stack-sm text-body-sm">
+        {{ successMessage }}
+        @if (createdLink) {
+          <a routerLink="{{ createdLink }}" class="font-bold underline ml-1">View it here</a>
+        }
+      </div>
+    }
+
+    <div class="space-y-1">
+      <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="title">Headline *</label>
+      <input id="title" formControlName="title" type="text"
+        class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+        placeholder="Christopher Nolan announces his next film" />
+      @if (form.controls.title.touched && form.controls.title.hasError('required')) {
+        <span class="text-error text-body-sm block">Headline is required</span>
+      }
+      @if (form.controls.title.touched && form.controls.title.hasError('maxlength')) {
+        <span class="text-error text-body-sm block">Headline must be under 150 characters</span>
+      }
+    </div>
+
+    <div class="space-y-1">
+      <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="body">Body *</label>
+      <textarea id="body" formControlName="body" rows="6"
+        class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none resize-y"
+        [maxlength]="bodyMaxLength"
+        placeholder="The acclaimed director returns with a mind-bending thriller..." ></textarea>
+      <div class="flex justify-between">
+        <span class="text-error text-body-sm">
+          @if (form.controls.body.touched && form.controls.body.hasError('required')) {
+            Body is required
+          }
+        </span>
+        <span class="font-label-caps text-label-caps text-on-surface-variant">
+          {{ form.controls.body.value?.length ?? 0 }}/{{ bodyMaxLength }}
+        </span>
+      </div>
+    </div>
+
+    <div class="space-y-1">
+      <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="authorUsername">Author *</label>
+      <input id="authorUsername" formControlName="authorUsername" type="text"
+        class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none" />
+      @if (form.controls.authorUsername.touched && form.controls.authorUsername.hasError('required')) {
+        <span class="text-error text-body-sm block">Author is required</span>
+      }
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="taggedTitleIds">Tagged Title IDs</label>
+        <input id="taggedTitleIds" formControlName="taggedTitleIds" type="text"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="comma separated UUIDs (optional)" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="taggedPersonIds">Tagged Person IDs</label>
+        <input id="taggedPersonIds" formControlName="taggedPersonIds" type="text"
+          class="w-full bg-surface-container-highest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 text-on-surface text-body-sm transition-all outline-none"
+          placeholder="comma separated UUIDs (optional)" />
+      </div>
+    </div>
+
+    <div class="pt-stack-sm">
+      <button
+        type="submit"
+        [disabled]="isSubmitting"
+        class="bg-primary hover:bg-primary-container text-on-primary font-bold py-4 px-8 rounded-lg uppercase tracking-widest transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70"
+      >
+        @if (isSubmitting) {
+          <span class="material-symbols-outlined animate-spin">progress_activity</span>
+        } @else {
+          <span class="material-symbols-outlined">publish</span>
+          Publish Article
+        }
+      </button>
+    </div>
+  </form>
+</main>

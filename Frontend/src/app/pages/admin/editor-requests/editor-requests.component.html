@@ -1,0 +1,109 @@
+<main class="flex-grow px-gutter py-stack-lg max-w-container-max mx-auto w-full">
+  <header class="mb-stack-lg">
+    <a routerLink="/studio" class="font-label-caps text-label-caps text-primary hover:underline">&larr; Back to Studio</a>
+    <h1 class="font-display-lg text-display-lg text-primary uppercase tracking-tighter mt-stack-sm">Editor Requests</h1>
+    <p class="font-body-md text-on-surface-variant">
+      Approve or reject users asking to become editors.
+    </p>
+  </header>
+
+  <div class="flex flex-wrap gap-stack-sm mb-stack-md" role="tablist" aria-label="Request status">
+    @for (s of statuses; track s) {
+      <button
+        type="button"
+        (click)="setFilter(s)"
+        role="tab"
+        [attr.aria-selected]="filter() === s"
+        class="px-stack-md py-stack-sm rounded-lg border font-label-caps text-label-caps transition-all"
+        [ngClass]="filter() === s
+          ? 'bg-primary text-on-primary border-primary'
+          : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'"
+      >
+        {{ s }}
+      </button>
+    }
+  </div>
+
+  @if (errorMessage) {
+    <div class="bg-error-container/20 border border-error/30 text-on-error-container rounded-lg px-stack-md py-stack-sm text-body-sm mb-stack-md">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="bg-surface-container rounded-xl border border-outline-variant/30 overflow-hidden">
+    @if (loading()) {
+      <div class="flex items-center justify-center py-stack-lg gap-stack-sm text-on-surface-variant">
+        <span class="material-symbols-outlined animate-spin">progress_activity</span>
+        Loading requests...
+      </div>
+    } @else if (requests().length === 0) {
+      <p class="text-on-surface-variant font-body-md text-center py-stack-lg">No {{ filter() }} requests.</p>
+    } @else {
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-outline-variant/30 font-label-caps text-label-caps text-on-surface-variant uppercase">
+            <th class="px-stack-md py-stack-sm">Email</th>
+            <th class="px-stack-md py-stack-sm">Status</th>
+            <th class="px-stack-md py-stack-sm">Requested At</th>
+            <th class="px-stack-md py-stack-sm">Reviewed At</th>
+            <th class="px-stack-md py-stack-sm text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (req of requests(); track req.id) {
+            <tr class="border-b border-outline-variant/10 hover:bg-surface-container-high transition-colors">
+              <td class="px-stack-md py-stack-sm">
+                <p class="font-body-sm text-on-surface">{{ req.email }}</p>
+                <span class="font-label-caps text-label-caps text-on-surface-variant">{{ req.userId }}</span>
+              </td>
+              <td class="px-stack-md py-stack-sm">
+                <span
+                  class="px-2 py-0.5 rounded-full text-label-caps"
+                  [ngClass]="{
+                    'bg-primary/20 text-primary': req.status === 'PENDING',
+                    'bg-emerald-400/20 text-emerald-400': req.status === 'APPROVED',
+                    'bg-error/20 text-error': req.status === 'REJECTED',
+                  }"
+                >
+                  {{ statusLabel(req.status) }}
+                </span>
+              </td>
+              <td class="px-stack-md py-stack-sm font-body-sm text-on-surface-variant">
+                {{ req.requestedAt | date: 'medium' }}
+              </td>
+              <td class="px-stack-md py-stack-sm font-body-sm text-on-surface-variant">
+                {{ req.reviewedAt ? (req.reviewedAt | date: 'medium') : '—' }}
+              </td>
+              <td class="px-stack-md py-stack-sm text-right whitespace-nowrap">
+                @if (req.status === 'PENDING') {
+                  <button
+                    (click)="approve(req.id)"
+                    [disabled]="isBusy(req.id)"
+                    class="inline-flex items-center gap-1 bg-primary text-on-primary font-bold px-3 py-1.5 rounded-lg text-label-caps hover:brightness-110 transition-all disabled:opacity-60 mr-2"
+                  >
+                    <span class="material-symbols-outlined text-sm">{{ isBusy(req.id) ? 'progress_activity' : 'check' }}</span>
+                    Approve
+                  </button>
+                  <button
+                    (click)="reject(req.id)"
+                    [disabled]="isBusy(req.id)"
+                    class="inline-flex items-center gap-1 border border-error/40 text-error font-bold px-3 py-1.5 rounded-lg text-label-caps hover:bg-error/10 transition-all disabled:opacity-60"
+                  >
+                    <span class="material-symbols-outlined text-sm">close</span>
+                    Reject
+                  </button>
+                } @else {
+                  <span class="text-label-caps text-on-surface-variant">Reviewed</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  <p class="mt-stack-md font-body-sm text-on-surface-variant">
+    Note: after approval, the user must log in again to pick up their new editor role.
+  </p>
+</main>
